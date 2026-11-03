@@ -1,0 +1,17 @@
+{
+  "name": "melchor-gasparo-excedencias",
+  "version": "2.0.0",
+  "description": "Sistema de Gestión de Excedencias de Obra para Melchor Gasparó",
+  "main": "server.js",
+  "scripts": {
+    "start": "node server.js"
+  },
+  "keywords": [
+    "construccion",
+    "excedencias",
+    "obras",
+    "melchor-gasparo"
+  ],
+  "author": "Melchor Gasparó S.A.",
+  "license": "ISC"
+}

@@ -1,0 +1,319 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Melchor Gasparó — Gestión de Excedencias</title>
+    <link rel="stylesheet" href="styles.css">
+    <link rel="icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><text y='.9em' font-size='90'>🏗️</text></svg>">
+</head>
+<body>
+
+    <!-- ═══════════════════════════════════════════ -->
+    <!-- LOGIN SCREEN                                -->
+    <!-- ═══════════════════════════════════════════ -->
+    <div id="login-screen">
+        <div class="login-container">
+            <div class="login-logo">
+                <div class="logo-icon">🏗️</div>
+                <h1>Melchor Gasparó</h1>
+                <p class="login-subtitle">Sistema de Gestión de Excedencias</p>
+            </div>
+            <form id="login-form" autocomplete="off">
+                <div class="form-group">
+                    <label for="login-email">Correo electrónico</label>
+                    <input type="email" id="login-email" placeholder="usuario@melchorgasparo.com" required>
+                </div>
+                <div class="form-group">
+                    <label for="login-password">Contraseña</label>
+                    <input type="password" id="login-password" placeholder="••••••••" required>
+                </div>
+                <div id="login-error" class="login-error hidden"></div>
+                <button type="submit" class="btn btn-primary btn-block">Iniciar Sesión</button>
+            </form>
+            <div class="login-help">
+                <p>Acceso exclusivo para empleados autorizados</p>
+            </div>
+        </div>
+    </div>
+
+    <!-- ═══════════════════════════════════════════ -->
+    <!-- MAIN APPLICATION                            -->
+    <!-- ═══════════════════════════════════════════ -->
+    <div id="app" class="hidden">
+
+        <!-- Sidebar -->
+        <aside id="sidebar">
+            <div class="sidebar-header">
+                <div class="sidebar-logo">🏗️</div>
+                <h2>MG Excedencias</h2>
+            </div>
+            <nav id="main-nav">
+                <a href="#" data-section="dashboard" class="nav-link active">
+                    <span class="nav-icon">📊</span>
+                    <span class="nav-text">Panel</span>
+                </a>
+                <a href="#" data-section="materiales" class="nav-link">
+                    <span class="nav-icon">🧱</span>
+                    <span class="nav-text">Materiales</span>
+                </a>
+                <a href="#" data-section="obras" class="nav-link">
+                    <span class="nav-icon">🏢</span>
+                    <span class="nav-text">Obras</span>
+                </a>
+                <a href="#" data-section="solicitudes" class="nav-link">
+                    <span class="nav-icon">📋</span>
+                    <span class="nav-text">Solicitudes</span>
+                    <span id="badge-solicitudes" class="nav-badge hidden">0</span>
+                </a>
+            </nav>
+            <div class="sidebar-footer">
+                <div class="user-info">
+                    <div class="user-avatar" id="user-avatar">JO</div>
+                    <div class="user-details">
+                        <span id="user-name" class="user-name">Nombre</span>
+                        <span id="user-role" class="user-role">Rol</span>
+                    </div>
+                </div>
+                <button id="btn-logout" class="btn btn-logout" title="Cerrar sesión">⏻</button>
+            </div>
+        </aside>
+
+        <!-- Main Content -->
+        <main id="main-content">
+
+            <!-- Top Bar -->
+            <header id="top-bar">
+                <button id="btn-menu" class="btn-menu">☰</button>
+                <h1 id="page-title">Panel de Control</h1>
+                <div id="top-bar-actions"></div>
+            </header>
+
+            <!-- Content Area -->
+            <div id="content-area">
+
+                <!-- ══════ DASHBOARD ══════ -->
+                <section id="sec-dashboard" class="section">
+                    <div class="stats-grid">
+                        <div class="stat-card stat-primary">
+                            <div class="stat-icon">🧱</div>
+                            <div class="stat-info">
+                                <span class="stat-value" id="stat-materiales">0</span>
+                                <span class="stat-label">Materiales</span>
+                            </div>
+                        </div>
+                        <div class="stat-card stat-success">
+                            <div class="stat-icon">📦</div>
+                            <div class="stat-info">
+                                <span class="stat-value" id="stat-excedencias">0</span>
+                                <span class="stat-label">Excedencias Publicadas</span>
+                            </div>
+                        </div>
+                        <div class="stat-card stat-warning">
+                            <div class="stat-icon">🏢</div>
+                            <div class="stat-info">
+                                <span class="stat-value" id="stat-obras">0</span>
+                                <span class="stat-label">Obras Activas</span>
+                            </div>
+                        </div>
+                        <div class="stat-card stat-info">
+                            <div class="stat-icon">📋</div>
+                            <div class="stat-info">
+                                <span class="stat-value" id="stat-solicitudes">0</span>
+                                <span class="stat-label">Solicitudes Pendientes</span>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="dashboard-grid">
+                        <div class="card">
+                            <h3 class="card-title">📋 Solicitudes Recientes</h3>
+                            <div id="dashboard-solicitudes" class="card-body"></div>
+                        </div>
+                        <div class="card">
+                            <h3 class="card-title">📦 Últimas Excedencias Publicadas</h3>
+                            <div id="dashboard-excedencias" class="card-body"></div>
+                        </div>
+                    </div>
+                </section>
+
+                <!-- ══════ MATERIALES ══════ -->
+                <section id="sec-materiales" class="section hidden">
+                    <div class="section-toolbar">
+                        <div class="search-box">
+                            <input type="text" id="search-materiales" placeholder="Buscar material...">
+                        </div>
+                        <div class="filter-group">
+                            <button class="btn btn-filter active" data-filter="all">Todos</button>
+                            <button class="btn btn-filter" data-filter="green">🟢 Alta disp.</button>
+                            <button class="btn btn-filter" data-filter="yellow">🟡 Baja disp.</button>
+                            <button class="btn btn-filter" data-filter="red">🔴 Sin excedencia</button>
+                        </div>
+                    </div>
+                    <div class="leyenda-semaforo">
+                        <span><span class="dot green"></span> Alta disponibilidad de excedencias (≥ 20 uds)</span>
+                        <span><span class="dot yellow"></span> Baja disponibilidad (1–19 uds)</span>
+                        <span><span class="dot red"></span> Sin excedencias disponibles</span>
+                    </div>
+                    <div id="materiales-grid" class="materials-grid"></div>
+                </section>
+
+                <!-- ══════ OBRAS ══════ -->
+                <section id="sec-obras" class="section hidden">
+                    <div id="obras-grid" class="obras-grid"></div>
+                </section>
+
+                <!-- ══════ OBRA DETAIL ══════ -->
+                <section id="sec-obra-detail" class="section hidden">
+                    <button class="btn btn-back" id="btn-back-obras">← Volver a Obras</button>
+                    <div class="obra-detail-header">
+                        <div>
+                            <h2 id="obra-detail-title"></h2>
+                            <p id="obra-detail-address" class="text-muted"></p>
+                        </div>
+                        <div id="obra-detail-badges"></div>
+                    </div>
+
+                    <div class="obra-detail-grid">
+                        <!-- Left: Register excedencias -->
+                        <div class="card" id="card-registrar-excedencias">
+                            <h3 class="card-title">📝 Registrar Excedencias</h3>
+                            <p class="card-subtitle">Marca los materiales de los que hay excedencia y la cantidad disponible.</p>
+                            <div class="material-search-box">
+                                <input type="text" id="search-material-obra" placeholder="Filtrar materiales...">
+                            </div>
+                            <div id="material-checklist" class="material-checklist"></div>
+                            <button class="btn btn-primary btn-block" id="btn-save-excedencias">💾 Guardar Excedencias</button>
+                        </div>
+
+                        <!-- Right: Current excedencias -->
+                        <div class="card">
+                            <h3 class="card-title">📦 Excedencias de esta Obra</h3>
+                            <div id="excedencias-table-container">
+                                <table class="data-table" id="excedencias-table">
+                                    <thead>
+                                        <tr>
+                                            <th>Material</th>
+                                            <th>Cantidad</th>
+                                            <th>Estado</th>
+                                            <th>Acciones</th>
+                                        </tr>
+                                    </thead>
+                                    <tbody id="excedencias-tbody"></tbody>
+                                </table>
+                                <div id="excedencias-empty" class="empty-state hidden">
+                                    <p>No hay excedencias registradas en esta obra.</p>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </section>
+
+                <!-- ══════ SOLICITUDES ══════ -->
+                <section id="sec-solicitudes" class="section hidden">
+                    <div class="section-toolbar">
+                        <div class="filter-group">
+                            <button class="btn btn-filter active" data-filter-sol="all">Todas</button>
+                            <button class="btn btn-filter" data-filter-sol="pendiente">⏳ Pendientes</button>
+                            <button class="btn btn-filter" data-filter-sol="aceptada">✅ Aceptadas</button>
+                            <button class="btn btn-filter" data-filter-sol="rechazada">❌ Rechazadas</button>
+                        </div>
+                        <button class="btn btn-primary" id="btn-new-solicitud">+ Nueva Solicitud</button>
+                    </div>
+                    <div id="solicitudes-list" class="solicitudes-list"></div>
+                </section>
+
+                <!-- ══════ NUEVA SOLICITUD ══════ -->
+                <section id="sec-new-solicitud" class="section hidden">
+                    <button class="btn btn-back" id="btn-back-solicitudes">← Volver a Solicitudes</button>
+                    <div class="card form-card">
+                        <h3 class="card-title">📝 Nueva Solicitud de Material</h3>
+                        <form id="solicitud-form">
+                            <div class="form-row">
+                                <div class="form-group">
+                                    <label for="sol-obra-destino">Obra que necesita el material</label>
+                                    <select id="sol-obra-destino" required>
+                                        <option value="">Selecciona obra...</option>
+                                    </select>
+                                </div>
+                                <div class="form-group">
+                                    <label for="sol-material">Material</label>
+                                    <select id="sol-material" required>
+                                        <option value="">Selecciona material...</option>
+                                    </select>
+                                </div>
+                            </div>
+                            <div class="form-row">
+                                <div class="form-group">
+                                    <label for="sol-cantidad">Cantidad necesaria</label>
+                                    <input type="number" id="sol-cantidad" min="1" required placeholder="0">
+                                </div>
+                                <div class="form-group">
+                                    <label for="sol-unidad">Unidad</label>
+                                    <input type="text" id="sol-unidad" readonly placeholder="—">
+                                </div>
+                            </div>
+
+                            <!-- Warning area -->
+                            <div id="excedencia-warning" class="alert alert-warning hidden">
+                                <div class="alert-header">
+                                    <span class="alert-icon">⚠️</span>
+                                    <strong>¡Excedencias disponibles!</strong>
+                                </div>
+                                <p>Antes de pedir a un proveedor, considera aprovechar material de otra obra:</p>
+                                <table class="data-table" id="excedencias-disponibles-table">
+                                    <thead>
+                                        <tr>
+                                            <th>Obra</th>
+                                            <th>Disponible</th>
+                                            <th>Acción</th>
+                                        </tr>
+                                    </thead>
+                                    <tbody id="excedencias-disponibles-tbody"></tbody>
+                                </table>
+                            </div>
+
+                            <div id="no-excedencia-info" class="alert alert-info hidden">
+                                <span class="alert-icon">ℹ️</span>
+                                <span>No hay excedencias de este material en ninguna obra. Puedes proceder con el pedido a proveedor.</span>
+                            </div>
+
+                            <div class="form-group">
+                                <label for="sol-notas">Notas adicionales</label>
+                                <textarea id="sol-notas" rows="3" placeholder="Observaciones, urgencia, etc."></textarea>
+                            </div>
+
+                            <div class="form-actions">
+                                <button type="button" class="btn btn-secondary" id="btn-cancel-solicitud">Cancelar</button>
+                                <button type="button" class="btn btn-warning" id="btn-pedir-proveedor">🚚 Pedir a Proveedor</button>
+                            </div>
+                        </form>
+                    </div>
+                </section>
+
+            </div><!-- /content-area -->
+        </main>
+    </div><!-- /app -->
+
+    <!-- ═══════════════════════════════════════════ -->
+    <!-- MODAL                                       -->
+    <!-- ═══════════════════════════════════════════ -->
+    <div id="modal-overlay" class="modal-overlay hidden">
+        <div class="modal" id="modal">
+            <div class="modal-header">
+                <h3 id="modal-title"></h3>
+                <button class="modal-close" id="modal-close">&times;</button>
+            </div>
+            <div class="modal-body" id="modal-body"></div>
+            <div class="modal-footer" id="modal-footer"></div>
+        </div>
+    </div>
+
+    <!-- ═══════════════════════════════════════════ -->
+    <!-- TOAST CONTAINER                             -->
+    <!-- ═══════════════════════════════════════════ -->
+    <div id="toast-container"></div>
+
+    <script src="app.js"></script>
+</body>
+</html>
